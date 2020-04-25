@@ -3,6 +3,7 @@
     <!-- 左半边 -->
     <zi-col span="6" id="left">
       <div id="left-center">
+        <!-- 标题 -->
         <div id="title">
           <img src="@/assets/logo.png" alt />
           <div>
@@ -15,12 +16,12 @@
           </div>
         </div>
         <div id="config">
-          <zi-collapse v-model="value" style="clear:left">
+          <zi-collapse v-model="value">
             <zi-collapse-item title="设置">
               <div>
                 <div class="chart-config">
                   <span>图片名</span>
-                  <zi-input suffix-label=".png" v-model="chartImgName"></zi-input>
+                  <zi-input suffix-label=".png" v-model="chartTitle"></zi-input>
                 </div>
               </div>
             </zi-collapse-item>
@@ -28,15 +29,15 @@
               <div>
                 <div class="chart-config">
                   <span>标题</span>
-                  <zi-input v-model="chart_option.title.text"></zi-input>
+                  <zi-input v-model="chartTitle"></zi-input>
                 </div>
                 <div class="chart-config">
                   <span>Y轴</span>
-                  <zi-input v-model="chart_option.yAxis.name"></zi-input>
+                  <zi-input v-model="chartYName"></zi-input>
                 </div>
                 <div class="chart-config">
                   <span>X轴</span>
-                  <zi-input v-model="chart_option.xAxis.name"></zi-input>
+                  <zi-input v-model="chartXName"></zi-input>
                 </div>
               </div>
             </zi-collapse-item>
@@ -54,14 +55,26 @@
                 >表格</button>
               </div>
               <div class="datasource" v-show="tab===2">
-                <zi-table>
-                  <zi-table-column prop="name" label="X轴"></zi-table-column>
-                  <zi-table-column prop="name" label="Y轴1"></zi-table-column>
-                  <zi-table-column prop="name" label="Y轴2"></zi-table-column>
-                </zi-table>
+                敬请期待！
+                <!-- <zi-table :data="tableData" @row-click="handleCurrTableChange">
+                  <div v-for="column in tableData[0]" :key="column">
+                    <zi-table-column :prop="column" :label="column" width="64">
+                      <template slot-scope="scope">
+                        <input
+                          v-model="scope.row[column]"
+                          placeholder="请输入内容"
+                          v-show="scope.row.isEdit"
+                          style="width:48px;"
+                          @blur="loseFocus(scope.$index, scope.row)"
+                        />
+                        <span v-show="!scope.row.isEdit">{{ scope.row[column] }}</span>
+                      </template>
+                    </zi-table-column>
+                  </div>
+                </zi-table> -->
               </div>
               <div class="datasource" v-show="tab===1">
-                <zi-textarea :value="JSON.stringify(tableData)" rows="10"></zi-textarea>
+                <zi-textarea v-model="tableDataJson" :rows="10"></zi-textarea>
               </div>
             </zi-collapse-item>
           </zi-collapse>
@@ -69,10 +82,21 @@
       </div>
       <!-- 左边-footer -->
       <div id="left-footer">
-        <div id="icon">
-          <a>
-            <font-awesome-icon :icon="['fab', 'weibo']" size="2x" />
-          </a>
+        <div class="icon">
+          <div class="icon-svg">
+            <a href="https://weibo.com/zhuzhezhe" target="_blank">
+              <icon-svg icon-class="weibo" />
+            </a>weibo
+          </div>
+          <div class="icon-svg">
+            <a href="https://trello.com/b/8HcbbdvW/charts" target="_blank">
+            <icon-svg icon-class="todo-line" /></a>todo
+          </div>
+          <div class="icon-svg">
+            <a href="https://support.qq.com/product/147506" target="_blank">
+              <icon-svg icon-class="fankuitianxie" />
+            </a>feedback
+          </div>
         </div>
         <div>version 1.0.1</div>
         <div>
@@ -85,11 +109,15 @@
     <zi-col span="18" id="right">
       <!-- 图表类型 -->
       <div id="right-top">
-        <zi-select v-model="chart_type" id="charts-type">
-          <zi-option value="折线图" />
-          <zi-option value="柱状图" />
+        <zi-select v-model="selectedChartType" id="charts-type">
+          <zi-option
+            v-for="item in chartType"
+            :value="item.value"
+            :label="item.text"
+            :key="item.value"
+          />
         </zi-select>
-        <a :href="chartImgUrl" :download="chartImgName">
+        <a :href="chartImgUrl" :download="chartTitle">
           <zi-button @click="downloadChart">下载</zi-button>
         </a>
       </div>
@@ -106,93 +134,50 @@
 
 <script>
 // @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
   name: "Home",
   components: {},
   data: () => ({
-    tab: 1,
+    focusState: false,
+
+    tab: 1, // 切换数据源，默认为JSON数据源
+    showTableEdit: false, // 默认table不编辑
 
     chart: "", //chart实例
-    chart_type: "折线图", //图表类型
-    chartImgName: "图表",
+    chartType: [
+      // 图表类型选择
+      { value: "line", text: "折线图" },
+      { value: "bar", text: "柱状图" },
+      { value: "pie", text: "饼图" }
+    ], //图表类型
     chartImgUrl: "", // 图片下载
+    tableData: [
+      // 源数据
+      ["product", "2015", "2016", "2017"],
+      ["Matcha Latte", 43.3, 85.8, 93.7],
+      ["Milk Tea", 83.1, 73.4, 55.1],
+      ["Cheese Cocoa", 86.4, 65.2, 82.5],
+      ["Walnut Brownie", 72.4, 53.9, 39.1]
+    ],
+    // echarts option
     chart_option: {
-      // echarts option
       title: {
-        text: "sss"
+        text: "历年产品销量"
       },
       legend: {},
       tooltip: {},
-      dataset: {
-        dimensions: ["product", "2015", "2016", "2017"],
-        source: [
-          { product: "Matcha Latte", "2015": 43.3, "2016": 85.8, "2017": 93.7 },
-          { product: "Milk Tea", "2015": 83.1, "2016": 73.4, "2017": 55.1 },
-          { product: "Cheese Cocoa", "2015": 86.4, "2016": 65.2, "2017": 82.5 },
-          {
-            product: "Walnut Brownie",
-            "2015": 72.4,
-            "2016": 53.9,
-            "2017": 39.1
-          }
-        ]
-      },
       xAxis: {
         type: "category",
-        name: "",
+        name: "产品类型",
         nameLocation: "center",
         nameGap: 24
       },
-      yAxis: { name: "", nameLocation: "center", nameGap: 24 },
+      yAxis: { name: "销量/万吨", nameLocation: "center", nameGap: 24 },
       series: [{ type: "line" }, { type: "line" }, { type: "line" }]
     },
-    value: "",
-    tableData: [
-      {
-        name: "apple",
-        usage: "eat",
-        point: "red, I like it",
-        taste: "sweet"
-      },
-      {
-        name: "orange",
-        usage: "eat",
-        point: "orange, fire ",
-        taste: "sour"
-      },
-      {
-        name: "lemon",
-        usage: "picture",
-        point: "sour",
-        taste: "sour"
-      },
-      {
-        name: "pear",
-        usage: "eat",
-        point: "yellow, code",
-        taste: "sweet"
-      }
-    ]
+    value: ""
   }),
-  watch: {
-    chart_option: {
-      handler(newVal, oldVal) {
-        if (this.chart) {
-          if (newVal) {
-            this.chart.setOption(newVal);
-          } else {
-            this.chart.setOption(oldVal);
-          }
-        } else {
-          this.initChart();
-        }
-      },
-      deep: true
-    }
-  },
-
   methods: {
     // 数据源选择切换
     dataSourceSelectHandler() {},
@@ -200,32 +185,140 @@ export default {
     init() {
       // 初始化echarts实例
       this.chart = this.$echarts.init(document.getElementById("charts"));
+      this.chart.clear();
       // 指定图表的配置项和数据
+      this.chart_option.dataset = {
+        source: this.tableData
+      };
       this.chart.setOption(this.chart_option);
       // 自动缩放
       window.addEventListener("resize", this.chart.resize);
     },
 
+    // 下载图表
     downloadChart() {
       this.chartImgUrl = this.chart.getDataURL({
         pixelRatio: 2,
         backgroundColor: "#fff"
       });
+    },
+
+    loseFocus(index, row) {
+      row.isEdit = false;
+    },
+    // table编辑cell
+    handleCurrTableChange(row) {
+      row.isEdit = true;
+    },
+    /* utils功能 */
+    object2Json(value) {
+      if (!value) return "";
+      if (value instanceof String) {
+        return;
+      }
+      // 去除isEdit字段 & 转换为JSON & 格式化
+      return JSON.stringify(
+        JSON.parse(
+          JSON.stringify(value, function(key, data) {
+            if (key == "isEdit") {
+              return undefined;
+            } else {
+              return data;
+            }
+          })
+        ),
+        null,
+        4
+      );
     }
   },
 
   mounted() {
     this.init();
+  },
+  computed: {
+    // 源数据
+    tableDataJson: {
+      get: function() {
+        return this.object2Json(this.tableData);
+      },
+      set: function(newVal) {
+        try {
+          this.tableData = JSON.parse(newVal);
+        } catch (error) {
+          console.info();
+        }
+        // 更新chart_option
+        this.chart.clear();
+        this.chart_option.dataset.source = this.tableData;
+        this.chart.setOption(this.chart_option);
+      }
+    },
+    // 图表标题
+    chartTitle: {
+      get: function() {
+        return this.chart_option.title.text;
+      },
+      set: function(newVal) {
+        this.chart_option.title.text = newVal;
+        this.chart.setOption(this.chart_option);
+      }
+    },
+    // y轴名称
+    chartYName: {
+      get: function() {
+        return this.chart_option.yAxis.name;
+      },
+      set: function(newVal) {
+        this.chart_option.yAxis.name = newVal;
+        this.chart.setOption(this.chart_option);
+      }
+    },
+    // x轴名称
+    chartXName: {
+      get: function() {
+        return this.chart_option.xAxis.name;
+      },
+      set: function(newVal) {
+        this.chart_option.xAxis.name = newVal;
+        this.chart.setOption(this.chart_option);
+      }
+    },
+    // 选择图表类型
+    selectedChartType: {
+      get: function() {
+        return this.chart_option.series[0].type;
+      },
+      set: function(nextChartType) {
+        let series = new Array();
+        for (let i = 0; i < this.tableData[0].length - 1; i++) {
+          series.push({ type: nextChartType });
+        }
+        this.chart_option.series = series;
+        this.chart.setOption(this.chart_option);
+      }
+    }
   }
 };
 </script>
 
 <style lang="less" scoped>
+/* Home样式文件 */
+
+/* ------------------------ */
+.vhcenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* basic style */
+
 hr {
   border: 0;
   height: 1px;
   background: #eaeaea;
-  // background-image: linear-gradient(to right, #ccc, #333, #ccc);
 }
 
 .active {
@@ -250,7 +343,6 @@ hr {
     display: flex;
     flex-direction: column;
     #left-center {
-      // flex: 1;
       #title {
         display: flex;
         align-items: center;
@@ -282,9 +374,6 @@ hr {
           background-color: #fafafa;
         }
       }
-      .datasource{
-        width: 100%;
-      }
     }
     #left-footer {
       // 左边栏底部
@@ -299,10 +388,16 @@ hr {
       div {
         padding: 12px;
       }
-      #icon {
+      .icon {
         margin: 24px 0 0 0;
-        font-awesome-icon {
-          padding: 12px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .icon-svg {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
         a {
           color: #333;
@@ -336,6 +431,9 @@ hr {
       flex-direction: column;
     }
   }
+}
+
+.header-wrapper {
 }
 
 // logo
