@@ -1,34 +1,9 @@
 # charts
+在线图表生成工具！
 
-## Project setup
-```
-npm install
-```
+访问：https://charts.shiniao.fun
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+![charts-show](show.png)
 
-### Compiles and minifies for production
-```
-npm run build
-```
+欢迎反馈bugs
 
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

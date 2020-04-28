@@ -4,17 +4,7 @@
     <zi-col span="6" id="left">
       <div id="left-center">
         <!-- 标题 -->
-        <div id="title">
-          <img src="@/assets/logo.png" alt />
-          <div>
-            <span class="logo logo-blue">C</span>
-            <span class="logo logo-red">h</span>
-            <span class="logo logo-yellow">a</span>
-            <span class="logo logo-blue">r</span>
-            <span class="logo logo-green">t</span>
-            <span class="logo logo-red">s</span>
-          </div>
-        </div>
+        <btitle></btitle>
         <div id="config">
           <zi-collapse v-model="value">
             <zi-collapse-item title="设置">
@@ -120,10 +110,12 @@
 <script>
 // @ is an alias to /src
 import Excel from "@/components/Excel";
+import BaseTitle from "@/components/BaseTitle"
 
 export default {
   name: "Home",
   components: {
+    btitle: BaseTitle,
     excel: Excel
   },
 
@@ -461,26 +453,5 @@ table {
 .header-wrapper {
 }
 
-// logo
-img {
-  width: 48px;
-  height: 48px;
-  margin-right: 12px;
-}
-.logo {
-  font-size: 2em;
-  font-weight: bolder;
-}
-.logo-blue {
-  color: #4285f4;
-}
-.logo-red {
-  color: #e84235;
-}
-.logo-yellow {
-  color: #fabb06;
-}
-.logo-green {
-  color: #34a853;
-}
+
 </style>
