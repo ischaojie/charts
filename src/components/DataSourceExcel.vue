@@ -1,16 +1,12 @@
-<template lang="pug">
-
-div
-    h1 test
+<template>
+  <div>
     
+  </div>
 </template>
 
 <script>
-export default {
-    
-}
+export default {};
 </script>
 
 <style lang="less" scoped>
-
 </style>

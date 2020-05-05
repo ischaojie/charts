@@ -1,13 +1,16 @@
 <template>
   <div class="title">
     <img src="@/assets/logo.png" alt />
-    <div>
-      <span class="logo logo-blue">C</span>
-      <span class="logo logo-red">h</span>
-      <span class="logo logo-yellow">a</span>
-      <span class="logo logo-blue">r</span>
-      <span class="logo logo-green">t</span>
-      <span class="logo logo-red">s</span>
+    <div class="title-text">
+      <div class="title-logo">
+        <span class="logo logo-red">C</span>
+        <span class="logo logo-yellow">h</span>
+        <span class="logo logo-blue">a</span>
+        <span class="logo logo-blue">r</span>
+        <span class="logo logo-blue">t</span>
+        <span class="logo logo-red">s</span>
+      </div>
+      <div class="title-works"><a>works.shiniao.fun</a></div>
     </div>
   </div>
 </template>
@@ -20,30 +23,42 @@ export default {};
 .title {
   display: flex;
   align-items: center;
-  padding-bottom: 24px;
+  padding: 12px 0 32px 0;
+  .title-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    .title-works {
+      font-size: 1em;
+      color: #888;
+      a{
+        color: #333;
+      }
+    }
+    
+  }
 }
 
 img {
-  width: 48px;
-  height: 48px;
+  width: 78px;
+  height: 78px;
   margin-right: 12px;
 }
 
 .logo {
   font-size: 2em;
   font-weight: bolder;
+  letter-spacing: 4px;
 }
 
 .logo-blue {
-  color: #4285f4;
+  color: #0070f3;
 }
 .logo-red {
-  color: #e84235;
+  color: #e00;
 }
 .logo-yellow {
-  color: #fabb06;
+  color: #f5a623;
 }
-.logo-green {
-  color: #34a853;
-}
+
 </style>

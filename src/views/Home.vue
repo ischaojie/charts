@@ -1,55 +1,38 @@
 <template>
-  <div id="home">
+  <div class="home">
     <!-- 左半边 -->
-    <zi-col span="6" id="left">
-      <div id="left-center">
+    <zi-col span="6" class="left">
+      <div class="left-center">
         <!-- 标题 -->
-        <btitle></btitle>
+        <base-title></base-title>
+        <!-- 设置 -->
         <div id="config">
-          <zi-collapse v-model="value">
-            <zi-collapse-item title="设置">
-              <div>
-                <div class="chart-config">
-                  <span>图片名</span>
-                  <zi-input suffix-label=".png" v-model="chartTitle"></zi-input>
-                </div>
+          <zi-collapse v-model="collapseItem" accordion>
+            <!-- 基本设置 -->
+            <zi-collapse-item title="基本设置">
+              <div v-for="(config, name) in baseConfig" :key="config.id">
+                <base-config
+                  :name="name"
+                  :config="config"
+                  type="1"
+                  @changeConfig="changeConfig(arguments)"
+                ></base-config>
               </div>
             </zi-collapse-item>
+            <!-- 图表配置 -->
             <zi-collapse-item title="图表配置">
-              <div>
-                <div class="chart-config">
-                  <span>标题</span>
-                  <zi-input v-model="chartTitle"></zi-input>
-                </div>
-                <div class="chart-config">
-                  <span>Y轴</span>
-                  <zi-input v-model="chartYName"></zi-input>
-                </div>
-                <div class="chart-config">
-                  <span>X轴</span>
-                  <zi-input v-model="chartXName"></zi-input>
-                </div>
+              <div v-for="(config, name) in chartConfig" :key="config.id">
+                <base-config
+                  :name="name"
+                  :config="config"
+                  type="2"
+                  @changeConfig="changeConfig(arguments)"
+                ></base-config>
               </div>
             </zi-collapse-item>
+            <!-- 数据源 -->
             <zi-collapse-item title="数据源">
-              <div id="datasource-switcher">
-                <button
-                  @click="tab=1"
-                  :class="{active:tab===1}"
-                  style="border-top-right-radius: 0;border-bottom-right-radius: 0;"
-                >JSON</button>
-                <button
-                  @click="tab=2"
-                  :class="{active:tab===2}"
-                  style="border-top-left-radius: 0;border-bottom-left-radius: 0;"
-                >Excel</button>
-              </div>
-              <div class="datasource" v-show="tab===2">
-                <excel :iexcel-data.sync="excelData" :itable-head.sync="tableHead"></excel>
-              </div>
-              <div class="datasource" v-show="tab===1">
-                <zi-textarea ref="json" v-model="tableDataJson" :rows="12"></zi-textarea>
-              </div>
+              <data-source :source="dataSource" @changeData="changeData"></data-source>
             </zi-collapse-item>
           </zi-collapse>
         </div>
@@ -63,7 +46,10 @@
             </a>weibo
           </div>
           <div class="icon-svg">
-            <a href="https://www.notion.so/chaojie/df627ca2b36140b8b912eb75c84cee51?v=522a45aa21f44e0d938616e5eef8f249" target="_blank">
+            <a
+              href="https://www.notion.so/chaojie/df627ca2b36140b8b912eb75c84cee51?v=522a45aa21f44e0d938616e5eef8f249"
+              target="_blank"
+            >
               <icon-svg icon-class="todo-line" />
             </a>todo
           </div>
@@ -82,7 +68,7 @@
     </zi-col>
     <!-- 右半边 -->
     <zi-col span="18" id="right">
-      <!-- 图表类型 -->
+      <!-- 选择图表类型 -->
       <div id="right-top">
         <zi-select v-model="selectedChartType" id="charts-type">
           <zi-option
@@ -92,13 +78,13 @@
             :key="item.value"
           />
         </zi-select>
-        <a :href="chartImgUrl" :download="chartTitle">
+        <a :href="chartImgUrl" :download="changeConfig[1]">
           <zi-button @click="downloadChart">下载</zi-button>
         </a>
       </div>
 
       <!-- 图表 -->
-      <zi-card id="charts"></zi-card>
+      <chart :source="dataSource" :config="chartConfig" :type="selectedChartType"></chart>
       <div id="right-footer">
         <h4>有任何问题欢迎反馈！</h4>
         <zi-rate style></zi-rate>
@@ -109,77 +95,74 @@
 
 <script>
 // @ is an alias to /src
-import Excel from "@/components/Excel";
-<<<<<<< HEAD
-=======
-import BaseTitle from "@/components/BaseTitle"
->>>>>>> master
+import BaseTitle from "@/components/BaseTitle";
+import BaseConfig from "@/components/BaseConfig";
+import DataSource from "@/components/DataSource";
+import Chart from "@/components/Chart";
 
 export default {
   name: "Home",
   components: {
-<<<<<<< HEAD
-=======
-    btitle: BaseTitle,
->>>>>>> master
-    excel: Excel
+    "base-title": BaseTitle,
+    "base-config": BaseConfig,
+    "data-source": DataSource,
+    chart: Chart
   },
 
   data: () => ({
-    focusState: false,
-    jsonErr: false, // json格式判断
-    jsonErrText: "",
+    // 手风琴item
+    collapseItem: "",
+    // 基本设置
+    baseConfig: { imgName: { id: 1, name: "图片名", value: "产品销量" } },
+    // 图表设置
+    chartConfig: {
+      title: { id: 1, name: "图表标题", value: "历年产品销量" },
+      xAxis: { id: 2, name: "X轴", value: "产品" },
+      yAxis: { id: 3, name: "Y轴", value: "销量/万吨" }
+    },
 
-    tab: 1, // 切换数据源，默认为JSON数据源
-    showTableEdit: false, // 默认table不编辑
-
-    chart: "", //chart实例
+    // 图表类型
     chartType: [
       // 图表类型选择
-      { value: "line", text: "折线图" },
       { value: "bar", text: "柱状图" },
+      { value: "line", text: "折线图" },
+      { value: "area", text: "面积图" },
       { value: "pie", text: "饼图" }
-    ], //图表类型
-    chartImgUrl: "", // 图片下载
-    tableData: [
-      { product: "Matcha Latte", count: 823, score: 95.8 },
-      { product: "Milk Tea", count: 235, score: 81.4 },
-      { product: "Cheese Cocoa", count: 1042, score: 91.2 },
-      { product: "Walnut Brownie", count: 988, score: 76.9 }
     ],
-    // echarts option
-    chart_option: {
-      title: {
-        text: "历年产品销量"
-      },
-      legend: {},
-      tooltip: {},
-      xAxis: {
-        type: "category",
-        name: "产品类型",
-        nameLocation: "center",
-        nameGap: 32
-      },
-      yAxis: { name: "销量/万吨", nameLocation: "center", nameGap: 32 },
-      series: [{ type: "line" }, { type: "line" }, { type: "line" }]
-    },
-    value: ""
-  }),
-  methods: {
-    // 数据源选择切换
-    dataSourceSelectHandler() {},
+    selectedChartType: "bar",
 
-    init() {
-      // 初始化echarts实例
-      this.chart = this.$echarts.init(document.getElementById("charts"));
-      this.chart.clear();
-      // 指定图表的配置项和数据
-      this.chart_option.dataset = {
-        source: this.tableData
-      };
-      this.chart.setOption(this.chart_option);
-      // 自动缩放
-      window.addEventListener("resize", this.chart.resize);
+    chartImgUrl: "", // 图片下载url
+
+    // 源数据
+    dataSource: [
+      { product: "Matcha Latte", "2015": 43.3, "2016": 85.8, "2017": 93.7 },
+      { product: "Milk Tea", "2015": 83.1, "2016": 73.4, "2017": 55.1 },
+      { product: "Cheese Cocoa", "2015": 86.4, "2016": 65.2, "2017": 82.5 },
+      { product: "Walnut Brownie", "2015": 72.4, "2016": 53.9, "2017": 39.1 }
+    ]
+  }),
+
+  computed: {},
+
+  methods: {
+    // 更新dataSource
+    changeData(newData) {
+      this.dataSource = newData;
+    },
+
+    // update config
+    changeConfig(params) {
+      const newConfig = params[0];
+      const name = params[1];
+      const type = params[2];
+
+      if (type === "2") {
+        // chart config
+        this.$set(this.chartConfig, name, newConfig);
+      } else if (type === "1") {
+        // base config
+        this.$set(this.baseConfig, name, newConfig);
+      }
     },
 
     // 下载图表
@@ -188,124 +171,10 @@ export default {
         pixelRatio: 2,
         backgroundColor: "#fff"
       });
-    },
-
-    loseFocus(index, row) {
-      row.isEdit = false;
-    },
-    // table编辑cell
-    handleCurrTableChange(row) {
-      row.isEdit = true;
-    },
-    /* utils功能 */
-    object2Json(value) {
-      if (!value) return "";
-      if (value instanceof String) {
-        return;
-      }
-      // 去除isEdit字段 & 转换为JSON & 格式化
-      return JSON.stringify(
-        JSON.parse(
-          JSON.stringify(value, function(key, data) {
-            if (key == "isEdit") {
-              return undefined;
-            } else {
-              return data;
-            }
-          })
-        ),
-        null,
-        4
-      );
     }
   },
 
-  mounted() {
-    this.init();
-  },
-  computed: {
-    // 源数据
-    tableDataJson: {
-      get: function() {
-        return this.object2Json(this.tableData);
-      },
-      set: function(newVal) {
-        try {
-          this.tableData = JSON.parse(newVal);
-        } catch (e) {
-          console.info("json err: " + e);
-        }
-
-        // 更新chart_option
-        this.chart.clear();
-        this.chart_option.dataset.source = this.tableData;
-        this.chart.setOption(this.chart_option);
-      }
-    },
-    // 表头数据
-    tableHead: function() {
-      return Object.keys(this.tableData[0]);
-    },
-    excelData: {
-      get: function() {
-        return this.tableData;
-      },
-      set: function(newVal) {
-        this.tableData = newVal;
-        // 更新chart_option
-        this.chart.clear();
-        this.chart_option.dataset.source = this.tableData;
-        this.chart.setOption(this.chart_option);
-      }
-    },
-    // 图表标题
-    chartTitle: {
-      get: function() {
-        return this.chart_option.title.text;
-      },
-      set: function(newVal) {
-        this.chart_option.title.text = newVal;
-        this.chart.setOption(this.chart_option);
-      }
-    },
-    // y轴名称
-    chartYName: {
-      get: function() {
-        return this.chart_option.yAxis.name;
-      },
-      set: function(newVal) {
-        this.chart_option.yAxis.name = newVal;
-        this.chart.setOption(this.chart_option);
-      }
-    },
-    // x轴名称
-    chartXName: {
-      get: function() {
-        return this.chart_option.xAxis.name;
-      },
-      set: function(newVal) {
-        this.chart_option.xAxis.name = newVal;
-        this.chart.setOption(this.chart_option);
-      }
-    },
-    // 选择图表类型
-    selectedChartType: {
-      get: function() {
-        console.info("charts type: " + this.chart_option.series);
-        return this.chart_option.series[0].type;
-      },
-      set: function(newVal) {
-        let series = new Array();
-        for (let i = 0; i < this.tableHead.length - 1; i++) {
-          series.push({ type: newVal });
-        }
-        console.info("charts series:" + series);
-        this.chart.clear();
-        this.chart_option.series = series;
-        this.chart.setOption(this.chart_option);
-      }
-    }
-  }
+  mounted() {}
 };
 </script>
 
@@ -346,10 +215,10 @@ table {
 
 //
 
-#home {
+.home {
   // home
 
-  #left {
+  .left {
     // 左边栏
     overflow: auto;
     border-right: 1px solid #eaeaea;
@@ -358,48 +227,10 @@ table {
     height: 100%;
     display: flex;
     flex-direction: column;
-    #left-center {
-      #title {
-        display: flex;
-        align-items: center;
-        padding-bottom: 24px;
-      }
-      .chart-config {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        flex-wrap: wrap;
-        padding: 6px 0;
-      }
-      #datasource-switcher {
-        // display: flex;
-        // align-items: center;
-        button {
-          background-color: #fff;
-          border: 1px solid #eaeaea;
-          border-radius: 4px;
-          width: 76px;
-          height: 28px;
-          margin: 12px 0;
-          font-size: 12px;
-        }
-        button:hover {
-          background-color: #fafafa;
-        }
-      }
-      .datasource {
-        table {
-          th {
-            width: 24px;
-          }
-        }
-      }
-    }
+   
     #left-footer {
       // 左边栏底部
-      background: #fafafa;
+      // background: #fafafa;
       flex: 1;
       display: flex;
       justify-content: center;
@@ -422,9 +253,6 @@ table {
           flex-direction: column;
           align-items: center;
         }
-        a {
-          color: #333;
-        }
       }
     }
   }
@@ -435,10 +263,7 @@ table {
     float: right;
     padding-left: 36px;
     height: 100%;
-    #charts {
-      height: 520px;
-      margin: 12px 0;
-    }
+
     #right-top {
       width: 100%;
       display: flex;
@@ -455,9 +280,4 @@ table {
     }
   }
 }
-
-.header-wrapper {
-}
-
-
 </style>

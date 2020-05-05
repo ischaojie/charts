@@ -5,11 +5,6 @@
 </template>
 
 <style lang="less">
-
-/* basic control */
-@base-width: 24px;
-
-
 * {
   margin: 0;
   padding: 0;
@@ -20,25 +15,17 @@ body {
   height: 100%;
 }
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-
   padding: 24px;
 }
 
-#nav {
-  padding: 30px;
+a {
+  color: #eaeaea;
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  &.router-link-exact-active {
+    color: #42b983;
   }
 }
 </style>

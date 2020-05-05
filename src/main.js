@@ -9,11 +9,10 @@ import IconSvg from '@/components/IconSvg'
 
 
 Vue.component('icon-svg', IconSvg)
+
 Vue.use(ZeiUI)
 Vue.prototype.$echarts = echarts;
 Vue.config.productionTip = false
-
-
 
 new Vue({
   router,
