@@ -21,11 +21,11 @@ body {
   padding: 24px;
 }
 
-a {
-  color: #eaeaea;
+// a {
+//   color: #eaeaea;
 
-  &.router-link-exact-active {
-    color: #42b983;
-  }
-}
+//   &.router-link-exact-active {
+//     color: #42b983;
+//   }
+// }
 </style>

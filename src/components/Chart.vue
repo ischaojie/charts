@@ -28,7 +28,6 @@ export default {
         tooltip: {},
 
         dataset: {
-          dimensions: ["product", "2015", "2016", "2017"],
           source: this.source
         },
         xAxis: {
@@ -113,10 +112,11 @@ export default {
       // 自动缩放
       window.addEventListener("resize", this.chart.resize);
     },
+
     // series: 获取父组件选中的图表类型，转换为series数组
     series(type) {
       let series = new Array();
-      for (let i = 0; i < this.source.length - 1; i++) {
+      for (let i = 0; i < this.source[0].length - 1; i++) {
         if (type === "area") {
           series.push({ type: "line", stack: "all", areaStyle: {} });
         } else {
@@ -136,5 +136,6 @@ export default {
 #charts {
   height: 520px;
   margin: 12px 0;
+  
 }
 </style>

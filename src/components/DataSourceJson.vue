@@ -1,9 +1,10 @@
 <template>
   <div>
-    <zi-textarea :value="sourceJson" @input="handleJsonInput" :rows="16"></zi-textarea>
+    开发中。。。
+    <!-- <zi-textarea :value="sourceJson" @input="handleJsonInput" :rows="14"></zi-textarea>
     <zi-button class="button" size="small" @click="format">格式化</zi-button>
 
-    <zi-note type="error" v-show="jsonIsErr">{{ jsonErrInfo }}</zi-note>
+    <zi-note type="error" v-show="jsonIsErr">{{ jsonErrInfo }}</zi-note> -->
   </div>
 </template>
 
@@ -35,12 +36,39 @@ export default {
         this.jsonIsErr = false;
         this.sourceJson = JSON.stringify(sourceJsonObj, null, 4);
         console.log(JSON.parse(this.sourceJson));
-      this.$emit("changeData", JSON.parse(this.sourceJson));
-
+        this.$emit("changeData", this.json2Arr(this.sourceJson));
       } catch (error) {
         this.jsonIsErr = true;
         this.jsonErrInfo = error;
       }
+    },
+    // arr2Json: 数组转为json对象
+    arr2Json(arr) {
+      let result = [];
+      let keys = arr[0];
+      for (let i = 0; i < arr.length; i++) {
+        let obj = {};
+        let vars = arr[i];
+        for (let j = 0; j < vars.length; j++) {
+          obj[keys[j]] = vars[j];
+        }
+        result.push(obj);
+      }
+      return result;
+    },
+    // json2Arr: json字符串转为array
+    json2Arr(jsonstr) {
+      let arr = [];
+
+      let json = JSON.parse(jsonstr);
+      let keys = Object.keys[json[0]];
+      arr.push(keys);
+
+      for (let i = 0; i < json.length; i++) {
+        arr.push(Object.values(json[i]));
+      }
+
+      return arr;
     },
 
     // 将对象转换为json字符串
@@ -49,7 +77,9 @@ export default {
       if (value instanceof String) {
         return;
       }
-      // 转换为JSON & 格式化
+      // array to json
+      value = this.arr2Json(value);
+      // obj格式化为json字符串
       return JSON.stringify(
         JSON.parse(
           JSON.stringify(value, function(key, data) {
@@ -62,9 +92,9 @@ export default {
     }
   },
   mounted() {
-    // this.sourceJson = 
+    // this.sourceJson =
     // console.info(this.sourceJson)
-  },
+  }
 };
 </script>
 

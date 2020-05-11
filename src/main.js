@@ -3,10 +3,9 @@ import App from './App.vue'
 import router from './router'
 import ZeiUI from '@zeit-ui/vue'
 import '@zeit-ui/vue/dist/zeit-ui.css'
-import echarts from "echarts";
+import echarts from 'echarts'
 import '@/iconfont'
 import IconSvg from '@/components/IconSvg'
-
 
 Vue.component('icon-svg', IconSvg)
 

@@ -6,36 +6,40 @@
       v-bind:class="['tab-button', { active: currentTab === tab }]"
       v-on:click="currentTab = tab"
     >{{ tab }}</button>
-
-    <div class="datasource" v-if="currentTab==='Excel'">
-      excel
-      <!-- <data-source-excel :iexcel-data.sync="source" :itable-head.sync="tableHead"></data-source-excel> -->
+    <component v-bind:is="currentTabComponent" v-bind="$attrs" v-on="$listeners"></component>
+    <!-- <div class="datasource" v-if="currentTab==='Excel'">
+      <data-source-excel v-bind="$attrs" v-on="$listeners"></data-source-excel>
     </div>
     <div class="datasource" v-if="currentTab==='Json'">
       <data-source-json v-bind="$attrs" v-on="$listeners"></data-source-json>
-    </div>
+    </div>-->
   </div>
 </template>
 
 <script>
-// import DataSourceExcel from "@/components/DataSourceExcel";
+import DataSourceExcel from "@/components/DataSourceExcel";
 import DataSourceJson from "@/components/DataSourceJson";
-
+import DataSourceCsv from "@/components/DataSourceCsv";
 export default {
   name: "DataSource",
   components: {
-    // "data-source-excel": DataSourceExcel,
-    "data-source-json": DataSourceJson
+    "data-source-excel": DataSourceExcel,
+    "data-source-json": DataSourceJson,
+    "data-source-csv": DataSourceCsv
   },
   props: {},
   data: function() {
     return {
-      currentTab: "Json", // 当前数据源tab
-      tabs: ["Json", "Excel"] // 数据源tab
+      currentTab: "Excel", // 当前数据源tab
+      tabs: ["Excel", "CSV", "JSON"] // 数据源tab
     };
   },
 
-  computed: {},
+  computed: {
+    currentTabComponent: function() {
+      return "data-source-" + this.currentTab.toLowerCase();
+    }
+  },
   methods: {}
 };
 </script>
