@@ -1,7 +1,7 @@
 <template>
   <div class="config">
     <span>{{ myConfig.name }}</span>
-    <zi-input :value="myConfig.value" @input="handleConfigInput"></zi-input>
+    <zi-input :value="myConfig.value" @input="handleConfigInput" clearable></zi-input>
   </div>
 </template>
 

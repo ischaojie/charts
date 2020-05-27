@@ -29,8 +29,6 @@
     "eslint-plugin-vue": "^6.2.2",
     "less": "^3.0.4",
     "less-loader": "^5.0.0",
-    "pug": "^2.0.4",
-    "pug-plain-loader": "^1.0.0",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
@@ -64,6 +62,14 @@
     "not dead"
   ],
   "jest": {
-    "preset": "@vue/cli-plugin-unit-jest"
+    "preset": "@vue/cli-plugin-unit-jest",
+    "testMatch": [
+      "**/__tests__/**/*.[jt]s?(x)",
+      "**/tests/*.spec.[jt]s?(x)",
+      "**/tests/unit/**/*.spec.{j,t}s?(x)"
+    ],
+    "roots": [
+      "<rootDir>/tests"
+    ]
   }
 }

@@ -59,7 +59,7 @@
             </a>feedback
           </div>
         </div>
-        <div>beta v1.0.1</div>
+        <div>beta v1.0.0</div>
         <div>
           I'm
           <zi-link href="https://blog.shiniao.fun/" more color>shiniao</zi-link>
@@ -68,26 +68,13 @@
     </zi-col>
     <!-- 右半边 -->
     <zi-col span="18" id="right">
-      <!-- 选择图表类型 -->
-      <div id="right-top">
-        <zi-select v-model="selectedChartType" id="charts-type">
-          <zi-option
-            v-for="item in chartType"
-            :value="item.value"
-            :label="item.text"
-            :key="item.value"
-          />
-        </zi-select>
-        <a :href="chartImgUrl" :download="changeConfig[1]">
-          <zi-button @click="downloadChart">下载</zi-button>
-        </a>
-      </div>
-
       <!-- 图表 -->
-      <chart :source="dataSource" :config="chartConfig" :type="selectedChartType"></chart>
-      <div id="right-footer">
-        <h4>有任何问题欢迎反馈！</h4>
-        <zi-rate style></zi-rate>
+      <div class="chart">
+        <chart :source="dataSource" :config="chartConfig" :bconfig="baseConfig"></chart>
+      </div>
+      <div class="right-footer">
+        <p>有任何问题欢迎反馈！</p>
+        <p>zhuzhezhe95@gmail.com</p>
       </div>
     </zi-col>
   </div>
@@ -99,6 +86,7 @@ import BaseTitle from "@/components/BaseTitle";
 import BaseConfig from "@/components/BaseConfig";
 import DataSource from "@/components/DataSource";
 import Chart from "@/components/Chart";
+import { DataSourceClear } from "@/utils";
 
 export default {
   name: "Home",
@@ -113,25 +101,15 @@ export default {
     // 手风琴item
     collapseItem: "",
     // 基本设置
-    baseConfig: { imgName: { id: 1, name: "图片名", value: "产品销量" } },
+    baseConfig: { 
+      imgName: { id: 1, name: "图片名", value: "产品销量" },
+      imgColor: {id:2, name:"图片背景", value: "#fff"} },
     // 图表设置
     chartConfig: {
       title: { id: 1, name: "图表标题", value: "历年产品销量" },
       xAxis: { id: 2, name: "X轴", value: "产品" },
       yAxis: { id: 3, name: "Y轴", value: "销量/万吨" }
     },
-
-    // 图表类型
-    chartType: [
-      // 图表类型选择
-      { value: "bar", text: "柱状图" },
-      { value: "line", text: "折线图" },
-      { value: "area", text: "面积图" },
-      { value: "pie", text: "饼图" }
-    ],
-    selectedChartType: "bar",
-
-    chartImgUrl: "", // 图片下载url
 
     // 源数据
     dataSource: [
@@ -143,12 +121,19 @@ export default {
     ]
   }),
 
-  computed: {},
+  watch: {
+    dataSource: {
+      handler(newVal) {
+      this.dataSource = DataSourceClear(newVal);
+      },
+      immediate: true
+    }
+  },
 
   methods: {
     // 更新dataSource
     changeData(newData) {
-      this.dataSource = newData;
+      this.dataSource = DataSourceClear(newData);
       console.log(this.dataSource)
     },
 
@@ -165,18 +150,11 @@ export default {
         // base config
         this.$set(this.baseConfig, name, newConfig);
       }
-    },
-
-    // 下载图表
-    downloadChart() {
-      this.chartImgUrl = this.chart.getDataURL({
-        pixelRatio: 2,
-        backgroundColor: "#fff"
-      });
     }
   },
 
-  mounted() {}
+  mounted() {
+  }
 };
 </script>
 
@@ -272,7 +250,7 @@ table {
       justify-content: space-between;
       flex-wrap: wrap;
     }
-    #right-footer {
+    .right-footer {
       flex: 1;
       margin-top: 24px;
       display: flex;

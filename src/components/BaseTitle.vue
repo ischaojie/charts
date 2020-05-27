@@ -10,7 +10,7 @@
         <span class="logo logo-blue">t</span>
         <span class="logo logo-red">s</span>
       </div>
-      <div class="title-works"><a>works.shiniao.fun</a></div>
+      <div class="title-works"><a href="https://works.shiniao.fun/" _blank="true">works.shiniao.fun</a></div>
     </div>
   </div>
 </template>

@@ -7,12 +7,6 @@
       v-on:click="currentTab = tab"
     >{{ tab }}</button>
     <component v-bind:is="currentTabComponent" v-bind="$attrs" v-on="$listeners"></component>
-    <!-- <div class="datasource" v-if="currentTab==='Excel'">
-      <data-source-excel v-bind="$attrs" v-on="$listeners"></data-source-excel>
-    </div>
-    <div class="datasource" v-if="currentTab==='Json'">
-      <data-source-json v-bind="$attrs" v-on="$listeners"></data-source-json>
-    </div>-->
   </div>
 </template>
 
